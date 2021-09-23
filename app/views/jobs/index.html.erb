@@ -1,0 +1,48 @@
+<div class="container">
+
+<div class="columns border-top">
+
+  <div class="column is-9 pl6">
+  <h1 class="font-weight-bold">List of Jobs</h1>
+    <% @jobs.each do |job| %>
+    <div class="columns border-bottom pt4">
+
+      <div class="column is-8">
+        <h3 class="title is-4 index-title"><%= link_to job.title, job %></h3>
+          <ul>
+            <li><%= link_to job.company_name, job.website %></li>
+          </ul>
+        <div class="pv2 f6">
+          <%= sanitize(job.description.truncate(200, separator: '</p>')) %>
+        </div>
+
+        <% if current_user.try(:admin) || current_user.id==job.user_id %>
+          <ul class="pv3">
+            <li class="inline-block f6">Admin controls: </li>
+            <li class="inline-block">
+              <%= link_to 'Edit', edit_job_path(job), class: 'button is-small is-link is-outlined' %></li>
+            <li class="inline-block">
+              <%= link_to 'Delete', job, method: :delete, data: { confirm: 'Are you sure?' }, class: 'button is-small is-link is-outlined' %></li>
+          </ul>
+        <% end %>
+        <ul class="pv3">
+          <li class="inline-block">
+            <%= link_to 'View', job, class: 'button is-small is-link is-outlined' %>
+          </li>
+        </ul>
+
+        </div>
+        <% if !job.avatar.file.nil? %>
+          <%= link_to image_tag(job.avatar_url(:thumb), alt: job.company_name, class: "has-text-centered"), job.website %>
+        <% end %>
+        <div class="column has-text-right">
+
+          <%= job_type(job.job_type) %>
+          <p class="pt2 f6"><%= job.location %></p>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+</div>
+</div>
