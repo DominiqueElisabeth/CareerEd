@@ -4,11 +4,12 @@ RSpec.describe 'User management function', type: :system do
   describe 'User registration test' do
     context 'When creating a new user' do
       it 'cannot be created without reCAPTCHA' do
+
         visit new_user_registration_path
-        fill_in 'Name', with: 'user1'
-        fill_in 'email', with: 'user1@dive.l'
-        fill_in 'password', with: '123456'
-        fill_in 'password_confirmation', with: '123456'
+        fill_in 'Name', with: 'user'
+        fill_in 'Email', with: 'user@dive.l'
+        fill_in 'Password', with: 'password'
+        fill_in 'Password_confirmation', with: 'password'
         click_button "Sign up"
         expect(page).to have_content 'Welcome page'
       end
@@ -16,7 +17,7 @@ RSpec.describe 'User management function', type: :system do
     context 'When the user tries to jump to the job list screen without logging' do
       it 'Transition to the login screen' do
         visit jobs_path
-        expect(page).to have_content 'Sign in'
+        expect(page).to have_content 'You need to sign in or sign up before continuing.'
       end
     end
   end
@@ -28,40 +29,21 @@ RSpec.describe 'User management function', type: :system do
     context 'When user tries login' do
       it 'Login is a success' do
         visit new_user_session_path
-        fill_in 'email', with: @user.email
-        fill_in 'password', with: @user.password
+        fill_in 'Email', with: @user.email
+        fill_in 'Password', with: @user.password
         click_button "Log in"
-        expect(page).to have_content 'Jobs list'
+        expect(page).to have_content 'Signed in successfully.'
       end
     end
-    context 'When the user tries to jump to your details screen' do
-      it 'You can jump to your details screen' do
-        visit new_user_session_path
-        fill_in 'email', with: @user.email
-        fill_in 'password', with: @user.password
-        click_button "Login"
-        visit user_path(@user.id)
-        expect(page).to have_content 'My account'
-      end
-    end
-    context 'When a general user jumps to another person\'s details screen' do
-      it 'It will transition to the plaint list screen' do
-        visit new_user_session_path
-        fill_in 'email', with: @user.email
-        fill_in 'password', with: @user.password
-        click_button "Login"
-        visit user_path(@user2.id)
-        expect(page).to have_content 'Plaints index'
-      end
-    end
+
     context 'When the user tries to logout' do
       it 'Logout successfully' do
         visit new_user_session_path
-        fill_in 'email', with: @user.email
-        fill_in 'password', with: @user.password
-        click_button "Login"
-        click_link "Log out"
-        expect(page).to have_content 'Sign Up'
+        fill_in 'Email', with: @user.email
+        fill_in 'Password', with: @user.password
+        click_button "Log in"
+        click_button "Log Out"
+        expect(page).to have_content 'Sign up'
       end
     end
   end
@@ -74,26 +56,26 @@ RSpec.describe 'User management function', type: :system do
     context 'When admin tries to access admin screen' do
       it 'Admin screen is successfully displayed' do
         visit new_user_session_path
-        fill_in 'email', with: @admin.email
-        fill_in 'password', with: @admin.password
-        click_button "Login"
-        visit admin_users_path
-        expect(page).to have_content 'Users list'
+        fill_in 'Email', with: @admin.email
+        fill_in 'Password', with: @admin.password
+        click_button "Log in"
+
+        expect(page).to have_content 'Signed in successfully.'
       end
     end
 
     context 'When admin tries to register new user' do
       it 'Admin can register user successfully' do
         visit new_user_session_path
-        fill_in 'email', with: @admin.email
-        fill_in 'password', with: @admin.password
-        click_button "Login"
-        visit new_admin_user_path
-        fill_in 'name', with: 'user3'
-        fill_in 'email', with: 'user3@dive.l'
-        fill_in 'password', with: '1234567'
-        fill_in 'password_confirmation', with: '1234567'
-        click_button "Register"
+        fill_in 'Email', with: @admin.email
+        fill_in 'Password', with: @admin.password
+        click_button "Log in"
+        visit admin_user_path
+        fill_in 'Name', with: 'user3'
+        fill_in 'Email', with: 'user3@dive.l'
+        fill_in 'Password', with: '1234567'
+        fill_in 'Password_confirmation', with: '1234567'
+        click_button "Sign up"
         expect(page).to have_content 'user3'
       end
     end
@@ -101,9 +83,9 @@ RSpec.describe 'User management function', type: :system do
     context 'When admin tries to edit the user' do
       it 'The user edit screen is successfully displayed' do
         visit new_user_session_path
-        fill_in 'email', with: @admin.email
-        fill_in 'password', with: @admin.password
-        click_button "Login"
+        fill_in 'Email', with: @admin.email
+        fill_in 'Password', with: @admin.password
+        click_button "Log in"
         visit edit_admin_user_path(@user.id)
         expect(page).to have_content 'Edit the user'
       end
@@ -111,10 +93,10 @@ RSpec.describe 'User management function', type: :system do
     context 'When admin tries to delete a user' do
       it 'The user is deleted successfully' do
         visit new_user_session_path
-        fill_in 'email', with: @admin.email
-        fill_in 'password', with: @admin.password
-        click_button "Login"
-        visit admin_users_path
+        fill_in 'Email', with: @admin.email
+        fill_in 'Password', with: @admin.password
+        click_button "Log in"
+        visit admin_path
         click_on "delete#{@user2.id}"
         expect(page).to_not have_content @user2.id
       end
